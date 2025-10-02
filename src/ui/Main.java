@@ -64,18 +64,105 @@ public class Main {
      * @return true si esta balanceada, false si no
      */
     public boolean verificarBalanceo(String s) {
-        // TODO: completar 
-        return false;
+
+        if (s == null || s.isEmpty()){
+            return true;
+        }
+
+        PilaGenerica<Character> pila  = new PilaGenerica<>(s.length());
+
+        try {
+
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+
+                if (c == '(' || c == '[' || c == '{') {
+                    pila.Push(c);
+
+                }
+
+                else if (c == ')' || c == ']' || c == '}') {
+
+                    if (pila.getTop() == 0){
+                        return false;
+                }
+
+                    char tope = pila.Pop();
+
+                    if(!esParValido(tope, c)) {
+                        return false;
+                    }
+
+            }
+
+        }
+        return pila.getTop() == 0;
+
+    } catch (IndexOutOfBoundsException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    /**
+    private boolean esParValido(char apertura, char cierre) {
+        return (apertura == '(' && cierre == ')') ||
+                (apertura == '[' && cierre == ']') ||
+                (apertura == '{' && cierre == '}');
+
+    }
+
+        /**
      * Encuentra y muestra todos los pares unicos de numeros que sumen objetivo usando TablasHash.
      * @param numeros arreglo de numeros enteros
      * @param objetivo suma objetivo
      */
-    public void encontrarParesConSuma(int[] numeros, int objetivo) {
-        // TODO: completar
-    }
+        public void encontrarParesConSuma(int[] numeros, int objetivo) {
+            try {
+                if (numeros == null || numeros.length < 2) {
+                    System.out.println("Se necesitan al menos 2 números para formar un par");
+                    return;
+                }
+
+                int tamañoTabla = Math.max(numeros.length * 2, 10);
+                TablasHash vistos = new TablasHash(tamañoTabla);
+
+                TablasHash paresUnicos = new TablasHash(tamañoTabla);
+
+                int contadorPares = 0;
+                System.out.println("Buscando pares que sumen " + objetivo);
+
+                for (int i = 0; i < numeros.length; i++) {
+                    int actual = numeros[i];
+                    int complemento = objetivo - actual;
+
+                    if (vistos.search(complemento, complemento)) {
+                        int menor = Math.min(actual, complemento);
+                        int mayor = Math.max(actual, complemento);
+
+                        if (!paresUnicos.search(menor, mayor)) {
+                            paresUnicos.insert(menor, mayor);
+                            System.out.println("Par encontrado: (" + menor + ", " + mayor + ")  "
+                                    + menor + " + " + mayor + " = " + objetivo);
+                            contadorPares++;
+                        }
+                    }
+
+                    if (!vistos.search(actual, actual)) {
+                        vistos.insert(actual, actual);
+                    }
+                }
+
+                System.out.println("\n" + "=".repeat(40));
+                if (contadorPares == 0) {
+                    System.out.println("Ningún par encontrado que sume " + objetivo);
+                } else {
+                    System.out.println("Total de pares únicos encontrados: " + contadorPares);
+                }
+                System.out.println("=".repeat(40));
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
     public static void main(String[] args) throws Exception {
         Main app = new Main();
